@@ -1,0 +1,220 @@
+DP CLASS 2: |
+............|
+............................................|
+find minimum cost to reach at the i,j point |
+............................................|
+#include<iostream>
+#include<string>
+#include<climits>
+#include<cstring>
+using namespace std;
+int mincost(int cost[][10] , int i , int j){
+    if(i== 0 && j == 0){
+        return cost[i][j];
+    }
+    else if(i==0 && j>0){
+        return mincost(cost,i,j-1)+cost[i][j];
+    }
+    else if(i>0 && j == 0){
+        return mincost(cost , i-1 ,j)+cost[i][j];
+    }
+    else{
+        int op1 = mincost(cost , i-1 , j);
+        int op2 = mincost(cost , i , j-1);
+        return min(op1,op2)+cost[i][j];
+    }
+}
+int BottomUp(int cost[][10] , int i , int j){
+    int dp[100][100]= {0};
+   // dp[0][1] = cost[i][j];
+   for(int k = 0 ; k<=i;k++){
+    for(int l = 0 ; l <= j ;l++){
+        if(k==0 && l==0){
+            dp[k][l] = cost[k][l];
+        }
+        else if(k==0 && l>0){
+            dp[k][l] = cost[k][l]+dp[k][l-1];
+                    }
+        else if(k>0 && l==0){
+            dp[k][l]=  cost[k][l]+dp[k-1][l];
+        }
+        else{
+            int op1 = cost[k][l]+dp[k-1][l];
+            int op2 = cost[k][l]+dp[k][l-1];
+            dp[k][l] = min(op1,op2);
+        }
+    }
+   }
+    for(int k = 0 ; k <= i ; k++){
+        for(int l = 0 ; l<= j ; l++){
+            cout<<dp[k][l]<<" ";
+        }
+        cout<<endl;
+    }
+    return dp[i][j];
+}
+int main(){
+    int cost[][10]={{1,2,5,1} , {8,3,6,2} , {0,1,3,3} , {4,1,7,2}};
+    int i ,j ;
+    cin>>i>>j;
+    cout<<BottomUp(cost,i,j)<<endl;
+    cout<<mincost(cost , i , j )<<endl;
+    return 0;
+}
+.......................................................................................................................................................................
+Elephant moves : |
+.................|
+#include<iostream>
+#include<string>
+#include<climits>
+#include<cstring>
+using namespace std;
+int FindPathElephant(int i=3 , int j=3){
+    int dp[100][100] = {0};
+    dp[0][0] = 1;
+    int val = 1;
+    for(int k = 1 ; k <=i ; k++){
+        dp[k][0] = val;
+        val *=2;
+    }
+    val = 1;
+    for(int k = 1 ; k <=i ; k++){
+        dp[0][k] = val;
+        val *= 2;
+    }
+    for(int k = 1 ; k <= i;k++){
+        for(int l = 1; l<= j ; l++){
+           int ans = 0;
+           for(int m= 0 ; m<k;m++){
+            ans +=dp[m][l];
+           }
+           for(int m= 0 ; m<l;m++){
+            ans +=dp[k][m];
+           }
+           dp[k][l] = ans;
+        }
+    }
+    for(int k = 0 ; k <= i;k++){
+        for(int l = 0 ; l<= j ; l++){
+            cout<<dp[k][l]<<" ";
+        }
+        cout<<endl;
+    }
+    return dp[i][j];
+}
+int main(){
+    FindPathElephant(3,3);
+    return 0;
+}
+.......................................................................................................................................................................
+find the number of subsequence between 2 strings|
+................................................|
+#include<iostream>
+#include<string>
+#include<climits>
+#include<cstring>
+using namespace std;
+int BottomUp(char *a , char *b){
+    int m = strlen(a);
+    int n = strlen(b);
+    int dp[100][100] = {0};
+    for(int i = 0 ; i <= m ; i++){
+        for(int j = 0 ; j<= n ;j++){
+            if(i==0 || j == 0){
+                dp[i][j] = 0;
+            }
+            else if(a[i-1]==b[j-1]){
+                dp[i][j] = dp[i-1][j-1]+1;
+            }
+            else{
+                dp[i][j] = max(dp[i-1][j] , dp[i][j-1]);
+            }
+        }
+    }
+    for(int i = 0 ; i<= m;i++){
+        for(int j = 0; j <= n;j++){
+            cout<<dp[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+    return dp[m][n];
+}
+int main(){
+    char a[100] , b[100];
+    cin>>a>>b;
+    cout<<BottomUp(a,b);
+    return 0;
+}
+.......................................................................................................................................................................
+#include<iostream>
+#include<string>
+#include<climits>
+#include<cstring>
+using namespace std;
+//knapsack problem
+int TopDown(int *wts,int *price,int n,int capacity,int dp[][100]){
+    if(n==0||capacity==0){
+        dp[n][capacity] = 0;
+        return  dp[n][capacity];
+    }
+    if(dp[n][capacity]!= -1){
+        return dp[n][capacity];
+    }
+    int inc = 0 , exc=0;
+    if(wts[n-1]<= capacity){
+        inc = price[n-1]+TopDown(wts,price,n-1,capacity-wts[n-1],dp);
+    }
+
+    exc = 0 + TopDown(wts,price,n-1,capacity,dp);
+    dp[n][capacity] = max(inc,exc);
+    return dp[n][capacity];
+}
+int knapsack(int *wts,int *price,int n,int capacity){
+    if(n==0||capacity==0){
+        return 0;
+    }
+
+    int inc = 0 , exc=0;
+    if(wts[n-1]<= capacity){
+        inc = price[n-1]+knapsack(wts,price,n-1,capacity-wts[n-1]);
+    }
+    exc = 0 + knapsack(wts,price,n-1,capacity);
+    return max(inc,exc);
+}
+int BottomUp(int *wts , int *price , int n , int capacity){
+    int dp[100][100] = {0};
+    for(int item = 0;item<= n;item++){
+        for(int c = 0 ; c<=capacity;c++){
+            if(item == 0 || c==0){
+                dp[item][c]=0;
+            }
+            else{
+                int inc=0,exc=0;
+                if(wts[item-1]<=c){
+                    inc = price[item-1]+dp[item-1][c-wts[item-1]];
+                }
+                exc = 0+dp[item-1][c];
+                dp[item][c]=max(inc,exc);
+            }
+        }
+    }
+    for(int i = 0 ; i <= n ;i++){
+        for(int j = 0 ; j <= capacity ; j++){
+            cout<<dp[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+    return dp[n][capacity];
+}
+int main(){
+    int wts[]={7,4,4};
+    int price[]={10,20,20};
+    int n = sizeof(wts)/sizeof(int);
+    int capacity;
+    int dp[100][100] = {-1};
+    cin>>capacity;
+    cout<<BottomUp(wts,price,n,capacity)<<endl;
+    cout<<knapsack(wts,price,n,capacity)<<endl;
+    cout<<TopDown(wts,price,n,capacity,dp);
+    return 0;
+}
